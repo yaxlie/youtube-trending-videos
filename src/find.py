@@ -1,4 +1,4 @@
-from finders import *
+from finders.finders import *
 
 if __name__ == "__main__":
     data = None

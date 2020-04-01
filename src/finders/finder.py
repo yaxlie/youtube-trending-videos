@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import csv
-import re
 
 class AttributeFinder(ABC):
     def __init__(self, file_name: str, column_name: str, data,  name: str = __name__):
@@ -39,31 +38,3 @@ class AttributeFinder(ABC):
 
     def __str__(self):
         return self.name
-
-class UpperCaseFinder(AttributeFinder):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'Upper case')
-
-    def is_condition_met(self, data: str) -> bool:
-        return data.isupper()
-
-class LowerCaseFinder(AttributeFinder):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'Lower case')
-
-    def is_condition_met(self, data: str) -> bool:
-        return data.islower()
-
-class DigitsFinder(AttributeFinder):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'With digits')
-
-    def is_condition_met(self, data: str) -> bool:
-        return re.match(r'\d', data)
-
-class ContainSpecialCharsFinder(AttributeFinder):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'With special characters')
-
-    def is_condition_met(self, data: str) -> bool:
-        return re.match(r'[^a-zA-Z.? !0-9]', data)
