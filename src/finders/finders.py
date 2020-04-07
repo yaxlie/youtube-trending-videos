@@ -74,6 +74,8 @@ class HourFinder(AttributeFinder):
 class CommonWordsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Common words', multiple=True)
+        if not column_name in ['title', 'tags', 'description']: # To skip and save time
+            raise Exception() # TODO: Custom exception
 
     def is_condition_met(self, data: str):
         from nltk.tokenize import word_tokenize
@@ -86,10 +88,6 @@ class CommonWordsFinder(AttributeFinder):
         words_count= Counter(words)
 
         return words_count
-
-    def __str__(self):
-        from collections import Counter
-        return f'"{{found": {dict(Counter(self.found).most_common(15))}'
 
 class LongTextWordsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
