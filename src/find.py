@@ -5,7 +5,7 @@ from finders.finders import *
 
 if __name__ == "__main__":
 	data = None
-	txt_columns=['title', 'channel_title', 'tags', 'description', 'publish_time', 'comments_disabled', 'ratings_disabled', 'video_error_or_removed']
+	txt_columns=['comments_disabled', 'ratings_disabled', 'video_error_or_removed']
 	csv_file = 'youtube_data/GB_videos_5p.csv'
 
 

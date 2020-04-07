@@ -36,7 +36,7 @@ class TrueFinder(AttributeFinder):
         super().__init__(file_name, column_name, data, 'Is True')
 
     def is_condition_met(self, data: str):
-        return data.upper == 'TRUE'
+        return data == 'True'
 
 
 class HyperlinkFinder(AttributeFinder):
