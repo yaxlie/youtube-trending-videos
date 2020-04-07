@@ -5,35 +5,37 @@ class UpperCaseFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, 'Upper case')
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         return data.isupper()
 
 class LowerCaseFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, 'Lower case')
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         return data.islower()
 
 class DigitsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, 'With digits')
 
-    def is_condition_met(self, data: str) -> bool:
-        return re.match(r'\d', data)
+    def is_condition_met(self, data: str):
+        result = re.match(r'\d', data)
+        return True if result else False
 
 class ContainSpecialCharsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, 'With special characters')
 
-    def is_condition_met(self, data: str) -> bool:
-        return re.match(r'[^a-zA-Z.? !0-9]', data)
+    def is_condition_met(self, data: str):
+        result = re.match(r'[^a-zA-Z.? !0-9]', data)
+        return True if result else False
 
 class TrueFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, 'Is True')
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         return data.upper == 'TRUE'
 
 
@@ -41,15 +43,16 @@ class HyperlinkFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, 'Is True')
 
-    def is_condition_met(self, data: str) -> bool:
-        return re.match(r'https?:\/\/', data)
+    def is_condition_met(self, data: str):
+        result = re.match(r'https?:\/\/', data)
+        return True if result else False
 
 
 class DayFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Upload day', multiple=True)
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         import datetime  
         import calendar
         dt_format = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -61,7 +64,7 @@ class HourFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Upload hour', multiple=True)
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         import datetime  
         import calendar
         dt_format = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -69,12 +72,10 @@ class HourFinder(AttributeFinder):
         return str(date.hour)
 
 class CommonWordsFinder(AttributeFinder):
-    from collections import Counter
-    
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Common words', multiple=True)
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         from nltk.tokenize import word_tokenize
         from nltk.stem import PorterStemmer
         from collections import Counter
@@ -87,13 +88,14 @@ class CommonWordsFinder(AttributeFinder):
         return words_count
 
     def __str__(self):
-        return f'"{{found": {dict(Counter(finder.found).most_common(15))}'
+        from collections import Counter
+        return f'"{{found": {dict(Counter(self.found).most_common(15))}'
 
 class LongTextWordsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Words counter', multiple=True)
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         words_count = len(data.split())
         long_level = int(words_count/5)
         return str(long_level)
@@ -102,7 +104,7 @@ class LongTextLettersFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Letters counter', multiple=True)
 
-    def is_condition_met(self, data: str) -> bool:
+    def is_condition_met(self, data: str):
         letters_count = len(data)
         long_level = int(letters_count/10)
         return str(long_level)

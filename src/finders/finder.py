@@ -40,7 +40,7 @@ class AttributeFinder(ABC):
                 if not is_condition_met in self.found:
                     self.found[is_condition_met] = 0
                 self.found[is_condition_met] += 1
-            elif type(is_condition_met) == int:
+            elif type(is_condition_met) == bool:
                 if is_condition_met:
                     self.found += 1
             elif type(is_condition_met) == collections.Counter:
@@ -53,6 +53,12 @@ class AttributeFinder(ABC):
             
 
     def __str__(self):
+        from collections import Counter
+        import json
         # return f'"{{found": {self.found}; "total": {self.total}; "missing": {self.missing}}}'
-        return f'{{"found": {self.found}}}'
+        if type(self.found) == dict:
+            j = json.dumps(dict(Counter(self.found).most_common(15)))
+            return f'{{"found": [{j}]}}'
+        else:
+            return f'{{"found": {self.found}}}' 
 
