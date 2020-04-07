@@ -71,23 +71,23 @@ class HourFinder(AttributeFinder):
         date = datetime.datetime.strptime(data, dt_format)
         return str(date.hour)
 
-class CommonWordsFinder(AttributeFinder):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Common words', multiple=True)
-        if not column_name in ['title', 'tags', 'description']: # To skip and save time
-            raise Exception() # TODO: Custom exception
+# class CommonWordsFinder(AttributeFinder):
+#     def __init__(self, file_name: str, column_name: str, data):
+#         super().__init__(file_name, column_name, data, f'Common words', multiple=True)
+#         if not column_name in ['title', 'tags', 'description']: # To skip and save time
+#             raise Exception() # TODO: Custom exception
 
-    def is_condition_met(self, data: str):
-        from nltk.tokenize import word_tokenize
-        from nltk.stem import PorterStemmer
-        from collections import Counter
+#     def is_condition_met(self, data: str):
+#         from nltk.tokenize import word_tokenize
+#         from nltk.stem import PorterStemmer
+#         from collections import Counter
 
-        stemmer = PorterStemmer()
+#         stemmer = PorterStemmer()
 
-        words = [stemmer.stem(word) for word in data.split()]
-        words_count= Counter(words)
+#         words = [stemmer.stem(word) for word in data.split()]
+#         words_count= Counter(words)
 
-        return words_count
+#         return words_count
 
 class LongTextWordsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):

@@ -50,7 +50,6 @@ class AttributeFinder(ABC):
                     self.found[key] += is_condition_met[key]
             else:
                 pass
-            
 
     def __str__(self):
         from collections import Counter

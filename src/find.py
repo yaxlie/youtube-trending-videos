@@ -1,32 +1,34 @@
 import inspect
 import finders, finders.finders
+import json
 from collections import Counter
 from finders.finders import *
+from progress.bar import Bar
 
 if __name__ == "__main__":
 	data = None
-	txt_columns=['comments_disabled', 'ratings_disabled', 'video_error_or_removed']
-	csv_file = 'youtube_data/GB_videos_5p.csv'
-
+	result = {}
+	txt_columns=['title', 'channel_title', 'tags', 'description', 'publish_time', 'comments_disabled', 'ratings_disabled', 'video_error_or_removed']
+	csv_files = ['youtube_data/GB_videos_5p.csv', 'US_videos_5p.csv']
 
 	all_finders = [m[0] for m in inspect.getmembers(finders.finders, inspect.isclass) if m[1].__module__ == 'finders.finders']
+	bar = Bar('Processing', max=len(csv_files) * len(all_finders) * len(txt_columns))
 
-	json = []
-	for findername in all_finders:
-		print('.') # TODO: progress bar
-		Finder = globals()[findername]
-		results = []
-		for column in txt_columns:
-			try:
-				with Finder(csv_file, column, data) as finder:
-					results.append(f'"{column}": {finder}')
-					# TODO: Check if any improve
-					# if not data:
-					# 	data = finder.data
-			except Exception as e:
-				pass
-				# print(e)
-		columns_array = ','.join(results)
-		json.append(f'{{"{findername}": [{{{columns_array}}}]}}')
-	result = ','.join(json)
-	print(f'[{result}]')
+	for csv_file in csv_files:
+		result[csv_file] = {}
+		for findername in all_finders:
+			result[csv_file][findername] = {}
+			Finder = globals()[findername]
+			for column in txt_columns:
+				bar.next()
+				try:
+					with Finder(csv_file, column, data) as finder:
+						result[csv_file][findername][column] = finder.found
+				except Exception as e:
+					pass
+	with open('result.json','w') as f:
+		json = json.dumps(result, sort_keys=True, indent=4)
+		f.write(json)
+		print(json)
+	
+	bar.finish()
