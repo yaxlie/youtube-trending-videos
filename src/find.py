@@ -23,12 +23,12 @@ if __name__ == "__main__":
 				bar.next()
 				try:
 					with Finder(csv_file, column, data) as finder:
-						result[csv_file][findername][column] = finder.found
+						result[csv_file][findername][column] = dict(Counter(finder.found).most_common(15))
 				except Exception as e:
 					pass
+	bar.finish()
+
 	with open('result.json','w') as f:
 		json = json.dumps(result, sort_keys=True, indent=4)
 		f.write(json)
 		print(json)
-	
-	bar.finish()
