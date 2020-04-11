@@ -89,6 +89,22 @@ class CommonWordsFinder(AttributeFinder):
 
         return words_count
 
+class PartsOfSpeechFinder(AttributeFinder):
+    def __init__(self, file_name: str, column_name: str, data):
+        super().__init__(file_name, column_name, data, f'Common words', multiple=True)
+        if not column_name in ['title', 'tags', 'description']: # To skip and save time
+            raise Exception() # TODO: Custom exception
+
+    def is_condition_met(self, data: str):
+        import nltk
+        from collections import Counter
+
+        tokens = nltk.word_tokenize(data)
+        pos_t = nltk.pos_tag(tokens)
+        words_count= Counter([pos[1] for pos in pos_t])
+
+        return words_count
+
 class LongTextWordsFinder(AttributeFinder):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Words counter', multiple=True)

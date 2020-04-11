@@ -4,6 +4,11 @@ import json
 from collections import Counter
 from finders.finders import *
 from progress.bar import Bar
+import nltk
+
+nltk.download('punkt')
+nltk.download('maxent_treebank_pos_tagger')
+nltk.download('averaged_perceptron_tagger')
 
 if __name__ == "__main__":
 	data = None
