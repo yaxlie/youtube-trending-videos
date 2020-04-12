@@ -2,6 +2,7 @@ youtube_data
 .venv
 **/*.json
 out/
+.cache
 
 # vscode-python/.gitignore
 .DS_Store

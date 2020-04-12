@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 import csv
 import collections
+import os
+import re
+import urllib.request
+from urllib.request import HTTPError
+
+CACHE_DIR = '.cache'
 
 class AttributeFinder(ABC):
     def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False):
@@ -28,6 +34,25 @@ class AttributeFinder(ABC):
     @abstractmethod
     def is_condition_met(self, data: str, **kwargs):
         pass
+
+    def download_image(self, url: str):
+        if not os.path.exists(CACHE_DIR):
+            os.mkdir(CACHE_DIR)
+        img_name = re.sub(r"[^A-Za-z.]+", '', url)
+        img_path = os.path.join(CACHE_DIR, img_name)
+
+        if not os.path.exists(os.path.join(CACHE_DIR, img_path)):
+            with open(img_path,'wb') as f:
+                try:
+                    content = urllib.request.urlopen(url).read()
+                    f.write(content)
+                    return content
+                except HTTPError:
+                    return None
+        else:
+            with open(img_path) as f:
+                return f.read()
+
 
     def count(self):
         for row in self.data:
