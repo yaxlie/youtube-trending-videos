@@ -1,4 +1,4 @@
-youtube_data
+data
 .venv
 **/*.json
 out/

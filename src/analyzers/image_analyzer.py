@@ -12,10 +12,11 @@ from progress.bar import Bar
 CACHE_DIR = '.cache'
 
 class ImageAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False):
+    def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False, limit=None):
         super().__init__(file_name, column_name, data, name, multiple=True)
         self.images = None
         self.cached_images_path = os.path.join(CACHE_DIR, Path(self.file_name).stem)
+        self.limit = limit
 
     def __enter__(self):
         if not self.data:
@@ -24,6 +25,11 @@ class ImageAnalyzer(Analyzer):
         self.total = len(self.data)
         self.download_images()
         self.load_images()
+
+        # If you don't want to process full dataset (time limit)
+        if self.limit:
+            self.data = self.data[0:self.limit]
+
         self.count()
 
         return self

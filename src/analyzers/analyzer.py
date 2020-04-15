@@ -63,6 +63,11 @@ class Analyzer(ABC):
                     if not key in self.found:
                         self.found[key] = 0
                     self.found[key] += decide[key]
+            elif type(decide) == list:
+                for key in decide:
+                    if not key in self.found:
+                        self.found[key] = 0
+                    self.found[key] += 1
             else:
                 pass
 
