@@ -5,12 +5,13 @@ import csv
 from urllib.request import HTTPError
 from abc import ABC, abstractmethod
 from http.client import RemoteDisconnected
-from finders.finder import AttributeFinder
+from analyzers.analyzer import Analyzer
 from pathlib import Path
+from progress.bar import Bar
 
 CACHE_DIR = '.cache'
 
-class ImageFinder(AttributeFinder):
+class ImageAnalyzer(Analyzer):
     def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False):
         super().__init__(file_name, column_name, data, name, multiple=True)
         self.images = None
@@ -28,7 +29,7 @@ class ImageFinder(AttributeFinder):
         return self
     
     @abstractmethod
-    def is_condition_met(self, data: str, **kwargs):
+    def decide(self, data: str, **kwargs):
         pass
     
     def load_images(self):
@@ -36,12 +37,10 @@ class ImageFinder(AttributeFinder):
             self.images = pickle.load(f)
 
     def download_images(self):
-        from progress.bar import Bar
-
         if not os.path.exists(self.cached_images_path):
             images = {}
 
-            bar = Bar('Processing', max=len(self.data))
+            bar = Bar('Downloading images...', max=len(self.data))
 
             for row in self.data:
                 bar.next()

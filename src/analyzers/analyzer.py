@@ -8,7 +8,7 @@ from urllib.request import HTTPError
 
 CACHE_DIR = '.cache'
 
-class AttributeFinder(ABC):
+class Analyzer(ABC):
     def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False):
         self.name = name
         self.file_name = file_name
@@ -33,7 +33,7 @@ class AttributeFinder(ABC):
         pass
 
     @abstractmethod
-    def is_condition_met(self, data: str, **kwargs):
+    def decide(self, data: str, **kwargs):
         pass
 
     def count(self):
@@ -47,22 +47,22 @@ class AttributeFinder(ABC):
                 self.missing += 1
                 continue
             
-            is_condition_met = self.is_condition_met(row[self.column_name])
+            decide = self.decide(row[self.column_name])
 
             # print("--- %s seconds ---" % (time.time() - start_time))
 
-            if type(is_condition_met) == str:
-                if not is_condition_met in self.found:
-                    self.found[is_condition_met] = 0
-                self.found[is_condition_met] += 1
-            elif type(is_condition_met) == bool:
-                if is_condition_met:
+            if type(decide) == str:
+                if not decide in self.found:
+                    self.found[decide] = 0
+                self.found[decide] += 1
+            elif type(decide) == bool:
+                if decide:
                     self.found += 1
-            elif type(is_condition_met) == collections.Counter:
-                for key in is_condition_met.keys():
+            elif type(decide) == collections.Counter:
+                for key in decide.keys():
                     if not key in self.found:
                         self.found[key] = 0
-                    self.found[key] += is_condition_met[key]
+                    self.found[key] += decide[key]
             else:
                 pass
 
