@@ -18,6 +18,7 @@ class AttributeFinder(ABC):
         self.missing = 0
         self.data = data
         self.multiple = multiple
+        self.progress = 0
     
     def __enter__(self):
         if not self.data:
@@ -35,32 +36,21 @@ class AttributeFinder(ABC):
     def is_condition_met(self, data: str, **kwargs):
         pass
 
-    def download_image(self, url: str):
-        if not os.path.exists(CACHE_DIR):
-            os.mkdir(CACHE_DIR)
-        img_name = re.sub(r"[^A-Za-z.]+", '', url)
-        img_path = os.path.join(CACHE_DIR, img_name)
-
-        if not os.path.exists(os.path.join(CACHE_DIR, img_path)):
-            with open(img_path,'wb') as f:
-                try:
-                    content = urllib.request.urlopen(url).read()
-                    f.write(content)
-                    return content
-                except HTTPError:
-                    return None
-        else:
-            with open(img_path) as f:
-                return f.read()
-
-
     def count(self):
+        # import time
         for row in self.data:
+
+            # start_time = time.time()
+
+            self.progress += 1
             if not self.column_name in row or any(row[self.column_name] == x for x in [None, '']):
                 self.missing += 1
                 continue
             
             is_condition_met = self.is_condition_met(row[self.column_name])
+
+            # print("--- %s seconds ---" % (time.time() - start_time))
+
             if type(is_condition_met) == str:
                 if not is_condition_met in self.found:
                     self.found[is_condition_met] = 0

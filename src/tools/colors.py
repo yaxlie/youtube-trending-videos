@@ -11,9 +11,5 @@ def closest_colour(requested_colour):
     return min_colours[min(min_colours.keys())]
 
 def get_colour_name(requested_colour):
-    try:
-        closest_name = actual_name = webcolors.rgb_to_name(requested_colour)
-    except ValueError:
-        closest_name = closest_colour(requested_colour)
-        actual_name = None
-    return actual_name, closest_name
+    closest_name = closest_colour(requested_colour)
+    return closest_name

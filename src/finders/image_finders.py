@@ -1,6 +1,6 @@
-from finders.finder import AttributeFinder
+from finders.image_finder import ImageFinder
 
-class ColorsFinder(AttributeFinder):
+class ColorsFinder(ImageFinder):
     '''
     Find main colors of the image
     '''
@@ -14,18 +14,19 @@ class ColorsFinder(AttributeFinder):
         import tools.colors
         from collections import Counter
 
-        image_data = self.download_image(data)
-
-        if not image_data:
+        if data in self.images:
+            image_data = self.images[data]
+        else:
             return None
+
         image = Image.open(BytesIO(image_data))
         image = image.crop((20, 20, 100, 60))
         image = image.resize((20, 20))
         colors = image.getcolors(400) # width * height
-        color_names = [tools.colors.get_colour_name(color[1])[1] for color in colors]
+        color_names = [tools.colors.get_colour_name(color[1]) for color in colors] # TODO: optimize
         colors_count = Counter(color_names)
         
-        [color[0] for color in colors_count.most_common(5)]
+        return '-'.join(sorted([color[0] for color in colors_count.most_common(5)]))
 
 
 # class TextFinder(AttributeFinder):
