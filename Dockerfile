@@ -4,6 +4,8 @@ RUN apt-get update
 
 RUN apt-get install unzip
 
+# TODO: Tesseract install https://github.com/tesseract-ocr/tesseract/wiki + set env path
+
 WORKDIR /usr/src/youtube-trending
 
 COPY requirements.txt ./

@@ -1,5 +1,6 @@
 import tools.colors
 import numpy as np
+import re
 from analyzers.image_analyzer import ImageAnalyzer
 from PIL import Image
 from collections import Counter
@@ -14,13 +15,7 @@ from imageai.Prediction import ImagePrediction
 #     def __init__(self, file_name: str, column_name: str, data):
 #         super().__init__(file_name, column_name, data, f'Main colors', multiple=True)
 
-#     def decide(self, data: str):
-#         if data in self.images:
-#             image_data = self.images[data]
-#         else:
-#             return None
-
-#         image = Image.open(BytesIO(image_data))
+#     def decide(self, image:Image):
 #         image = image.crop((20, 20, 100, 60))
 #         image = image.resize((20, 20))
 #         colors = image.getcolors(400) # width * height
@@ -31,96 +26,83 @@ from imageai.Prediction import ImagePrediction
 
 
 # class SummedColors(Analyzer):
-#     '''
-#     Check if image contain text
-#     '''
-#     def __init__(self, file_name: str, column_name: str, data):
-#         super().__init__(file_name, column_name, data, f'Has text', multiple=True)
 
-# class TextAnalyzer(Analyzer):
-#     '''
-#     Check if image contain text
-#     '''
-#     def __init__(self, file_name: str, column_name: str, data):
-#         super().__init__(file_name, column_name, data, f'Has text', multiple=True)
-
-class ObjectsNamesAnalyzer(ImageAnalyzer):
+class TextAnalyzer(ImageAnalyzer):
     '''
-    Find objects in the image
+    Check if image contain text.
+    WARNING: Tesseract-ocr installation is needed! 
+    refs https://github.com/tesseract-ocr/tesseract/wiki
     '''
+    
+    def __init__(self, file_name: str, column_name: str, data):
+        super().__init__(file_name, column_name, data, f'Has text', multiple=True)
 
-    def __init__(self, file_name: str, column_name: str, data, limit=100): #TODO: no limit
-        super().__init__(file_name, column_name, data, f'Objects', multiple=True, limit=limit)
-        self.detector = init_detector("./data/yolo-tiny.h5")
+    def decide(self, image:Image):
+        import pytesseract
+        text = pytesseract.image_to_string(image)
+        text = re.sub(r"[^A-Za-z]+", '', text)
+        return text
 
-    def decide(self, data:str):
-        if data in self.images:
-            image_data = BytesIO(self.images[data])
-            image_data = np.array(Image.open(image_data)) 
-        else:
-            return None
+# class ObjectsNamesAnalyzer(ImageAnalyzer):
+#     '''
+#     Find objects in the image
+#     '''
 
-        try:
-            # Library bug: if prediction array is empty (e.g. no object with p > 0.1) there will be ValueError
-            # + For 'stream' there is no return, lol
-            # We have to set output_type=None - doesn't mention in ImageAI docs
-            # TODO: Report on https://github.com/OlafenwaMoses/ImageAI
-            detected_copy, detected_objects = self.detector.detectObjectsFromImage(input_image=image_data, input_type="array", 
-            minimum_percentage_probability=0, output_type='array')
-        except ValueError:
-            return None
+#     def __init__(self, file_name: str, column_name: str, data, limit=100): #TODO: no limit
+#         super().__init__(file_name, column_name, data, f'Objects', multiple=True, limit=limit)
+#         self.detector = init_detector("./data/yolo-tiny.h5")
 
-        if not detected_objects:
-            return 'Unknown'
-        else:
-            objects = [obj['name'] for obj in detected_objects] 
-            objects = list(dict.fromkeys(objects))
-            return objects
+#     def decide(self, image:Image):
+#         image_data = np.array(image)
+#         try:
+#             # Library bug: if prediction array is empty (e.g. no object with p > 0.1) there will be ValueError
+#             # + For 'stream' there is no return, lol
+#             # We have to set output_type=None - doesn't mention in ImageAI docs
+#             # TODO: Report on https://github.com/OlafenwaMoses/ImageAI
+#             detected_copy, detected_objects = self.detector.detectObjectsFromImage(input_image=image_data, input_type="array", 
+#             minimum_percentage_probability=0, output_type='array')
+#         except ValueError:
+#             return None
+
+#         if not detected_objects:
+#             return 'Unknown'
+#         else:
+#             objects = [obj['name'] for obj in detected_objects] 
+#             objects = list(dict.fromkeys(objects))
+#             return objects
 
 
-class ObjectsNumberAnalyzer(ImageAnalyzer):
-    '''
-    Return number of different objects on image
-    '''
+# class ObjectsNumberAnalyzer(ImageAnalyzer):
+#     '''
+#     Return number of different objects on image
+#     '''
 
-    def __init__(self, file_name: str, column_name: str, data, limit=100): #TODO: no limit
-        super().__init__(file_name, column_name, data, f'Number of objects', multiple=True, limit=limit)
-        self.detector = init_detector("./data/yolo-tiny.h5")
+#     def __init__(self, file_name: str, column_name: str, data, limit=100): #TODO: no limit
+#         super().__init__(file_name, column_name, data, f'Number of objects', multiple=True, limit=limit)
+#         self.detector = init_detector("./data/yolo-tiny.h5")
 
-    def decide(self, data:str):
-        if data in self.images:
-            image_data = BytesIO(self.images[data])
-            image_data = np.array(Image.open(image_data)) 
-        else:
-            return None
+#     def decide(self, image:Image):
+#         image_data = np.array(image) 
+#         try:
+#             detected_copy, detected_objects = self.detector.detectObjectsFromImage(input_image=image_data, input_type="array", 
+#             minimum_percentage_probability=0, output_type='array')
+#         except ValueError:
+#             return None
 
-        try:
-            detected_copy, detected_objects = self.detector.detectObjectsFromImage(input_image=image_data, input_type="array", 
-            minimum_percentage_probability=0, output_type='array')
-        except ValueError:
-            return None
-
-        if not detected_objects:
-            return 0
-        else:
-            objects = [obj['name'] for obj in detected_objects] 
-            objects = list(dict.fromkeys(objects))
-            return str(len(objects))
+#         if not detected_objects:
+#             return 0
+#         else:
+#             objects = [obj['name'] for obj in detected_objects] 
+#             objects = list(dict.fromkeys(objects))
+#             return str(len(objects))
 
 
 # class AccentAnalyzer(Analyzer):
-#     '''
-#     Does image contain accent elements (i.e. bright color)?
-#     '''
-#     def __init__(self, file_name: str, column_name: str, data):
-#         super().__init__(file_name, column_name, data, f'Has accent', multiple=True)
 
 # class EmotionsAnalyzer(Analyzer):
 #     '''
-#     Detect emotions emanating from image
+#     Detect emotions emanating from image (not only face)
 #     '''
-#     def __init__(self, file_name: str, column_name: str, data):
-#         super().__init__(file_name, column_name, data, f'Emotions', multiple=True)
 
 def init_detector(model_path):
     detector = ObjectDetection()

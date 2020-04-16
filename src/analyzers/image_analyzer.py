@@ -8,6 +8,9 @@ from http.client import RemoteDisconnected
 from analyzers.analyzer import Analyzer
 from pathlib import Path
 from progress.bar import Bar
+from copy import copy
+from PIL import Image
+from io import BytesIO
 
 CACHE_DIR = '.cache'
 
@@ -30,10 +33,32 @@ class ImageAnalyzer(Analyzer):
         if self.limit:
             self.data = self.data[0:self.limit]
 
+        self.convert_data()
+
         self.count()
 
         return self
     
+    def convert_data(self):
+        # convert data to images:
+        tmp_data = []
+        for data in self.data:
+            converted_data = self.data2image(data)
+            if converted_data:
+                tmp_data.append(converted_data)
+        self.data = tmp_data
+
+    def data2image(self, data):
+        url = data[self.column_name]
+        if url in self.images:
+            image_data = self.images[url]
+            image = Image.open(BytesIO(image_data))
+            data[self.column_name] = image
+            return data
+        else:
+            self.missing += 1
+            return None
+
     @abstractmethod
     def decide(self, data: str, **kwargs):
         pass
