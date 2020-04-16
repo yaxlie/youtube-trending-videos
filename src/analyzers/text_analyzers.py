@@ -100,7 +100,7 @@ class PartsOfSpeechAnalyzer(Analyzer):
     def __init__(self, file_name: str, column_name: str, data):
         super().__init__(file_name, column_name, data, f'Common words', multiple=True)
         if not column_name in ['title', 'tags', 'description']: # To skip and save time
-            raise Exception() # TODO: Custom exception
+            raise TypeError() # TODO: Custom exception
 
     def decide(self, data: str):
         tokens = nltk.word_tokenize(data)

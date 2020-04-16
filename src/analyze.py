@@ -22,12 +22,12 @@ def execute(csv_files, columns, analyzers, output='result'):
 			Analyzer = globals()[analyzername]
 			for column in columns:
 				bar.next()
-				# try:
-				with Analyzer(csv_file, column, data) as analyzer:
-					result[csv_file][analyzername][column] = dict(Counter(analyzer.found).most_common(15))
-				# except (ValueError, TypeError):
-				# 	# It just means, that the specific column is not for this specific analyzer - ignore.
-				# 	pass
+				try:
+					with Analyzer(csv_file, column, data) as analyzer:
+						result[csv_file][analyzername][column] = dict(Counter(analyzer.found).most_common(15))
+				except (ValueError, TypeError):
+					# It just means, that the specific column is not for this specific analyzer - ignore.
+					pass
 	bar.finish()
 
 	with open(f'{output}.json','w') as f:
@@ -46,5 +46,5 @@ if __name__ == "__main__":
 	img_columns=['thumbnail_link']
 	img_analyzers = [m[0] for m in inspect.getmembers(analyzers.image_analyzers, inspect.isclass) if m[1].__module__ == 'analyzers.image_analyzers']
 
-	# execute(csv_files, txt_columns, txt_analyzers)
+	execute(csv_files, txt_columns, txt_analyzers, 'text')
 	execute(csv_files, img_columns, img_analyzers, 'images')
