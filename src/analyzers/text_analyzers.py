@@ -2,7 +2,7 @@ import re
 import datetime  
 import calendar
 import nltk
-from analyzers.analyzer import Analyzer
+from src.analyzers.analyzer import Analyzer
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from collections import Counter

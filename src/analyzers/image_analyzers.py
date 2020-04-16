@@ -1,7 +1,7 @@
-import tools.colors
+import src.tools.colors
 import numpy as np
 import re
-from analyzers.image_analyzer import ImageAnalyzer
+from src.analyzers.image_analyzer import ImageAnalyzer
 from PIL import Image
 from collections import Counter
 from io import BytesIO

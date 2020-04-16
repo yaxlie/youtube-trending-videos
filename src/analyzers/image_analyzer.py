@@ -5,7 +5,7 @@ import csv
 from urllib.request import HTTPError
 from abc import ABC, abstractmethod
 from http.client import RemoteDisconnected
-from analyzers.analyzer import Analyzer
+from src.analyzers.analyzer import Analyzer
 from pathlib import Path
 from progress.bar import Bar
 from copy import copy
