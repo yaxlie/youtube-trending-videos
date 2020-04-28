@@ -23,7 +23,10 @@ def execute(csv_files, columns, analyzers, output='result'):
 				bar.next()
 				try:
 					with Analyzer(csv_file, column, data) as analyzer:
-						result[csv_file][analyzername][column] = dict(Counter(analyzer.found).most_common(15))
+						if type(analyzer.found) == int:
+							result[csv_file][analyzername][column] = analyzer.found
+						else:
+							result[csv_file][analyzername][column] = dict(Counter(analyzer.found).most_common(15))
 				except (ValueError, TypeError):
 					# It just means, that the specific column is not for this specific analyzer - ignore.
 					pass

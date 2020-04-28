@@ -16,4 +16,4 @@ if __name__ == "__main__":
 	img_analyzers = [m[0] for m in inspect.getmembers(src.analyzers.image_analyzers, inspect.isclass) if m[1].__module__ == 'src.analyzers.image_analyzers']
 
 	analyze.execute(csv_files, txt_columns, txt_analyzers, 'text')
-	analyze.execute(csv_files, img_columns, img_analyzers, 'images')
+	# analyze.execute(csv_files, img_columns, img_analyzers, 'images')

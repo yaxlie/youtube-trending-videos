@@ -9,13 +9,13 @@ from urllib.request import HTTPError
 CACHE_DIR = '.cache'
 
 class Analyzer(ABC):
-    def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False):
+    def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False, omit_missing=True):
         self.name = name
         self.file_name = file_name
         self.column_name = column_name.strip()
         self.total = 0
         self.found = {} if multiple else 0 
-        self.missing = 0
+        self.missing = 0 if omit_missing else None
         self.data = data
         self.multiple = multiple
         self.progress = 0
@@ -39,11 +39,10 @@ class Analyzer(ABC):
     def count(self):
         # import time
         for row in self.data:
-
             # start_time = time.time()
 
             self.progress += 1
-            if not self.column_name in row or any(row[self.column_name] == x for x in [None, '']):
+            if self.missing is not None and (not self.column_name in row or any(row[self.column_name] == x for x in [None, ''])):
                 self.missing += 1
                 continue
             
