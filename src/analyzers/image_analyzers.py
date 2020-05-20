@@ -19,7 +19,7 @@ class ColorsAnalyzer(ImageAnalyzer):
         image = image.crop((20, 20, 100, 60))
         image = image.resize((20, 20))
         colors = image.getcolors(400) # width * height
-        color_names = [tools.colors.get_colour_name(color[1]) for color in colors] # TODO: optimize
+        color_names = [src.tools.colors.get_colour_name(color[1]) for color in colors] # TODO: optimize
         colors_count = Counter(color_names)
         
         return '-'.join(sorted([color[0] for color in colors_count.most_common(5)]))
@@ -47,9 +47,9 @@ class ObjectsNamesAnalyzer(ImageAnalyzer):
     Find objects in the image
     '''
 
-    def __init__(self, file_name: str, column_name: str, data, limit=100): #TODO: no limit
+    def __init__(self, file_name: str, column_name: str, data, limit=1000): #TODO: no limit
         super().__init__(file_name, column_name, data, f'Objects', multiple=True, limit=limit)
-        self.detector = init_detector("./data/yolo-tiny.h5")
+        self.detector = init_detector("./data/yolo.h5")
 
     def decide(self, image:Image):
         image_data = np.array(image)
@@ -76,9 +76,9 @@ class ObjectsNumberAnalyzer(ImageAnalyzer):
     Return number of different objects on image
     '''
 
-    def __init__(self, file_name: str, column_name: str, data, limit=100): #TODO: no limit
+    def __init__(self, file_name: str, column_name: str, data, limit=1000): #TODO: no limit
         super().__init__(file_name, column_name, data, f'Number of objects', multiple=True, limit=limit)
-        self.detector = init_detector("./data/yolo-tiny.h5")
+        self.detector = init_detector("./data/yolo.h5")
 
     def decide(self, image:Image):
         image_data = np.array(image) 
@@ -105,7 +105,7 @@ class ObjectsNumberAnalyzer(ImageAnalyzer):
 
 def init_detector(model_path):
     detector = ObjectDetection()
-    detector.setModelTypeAsTinyYOLOv3()
+    detector.setModelTypeAsYOLOv3()
     detector.setModelPath(model_path)
     detector.loadModel()
 
