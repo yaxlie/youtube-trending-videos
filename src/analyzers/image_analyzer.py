@@ -15,8 +15,8 @@ from io import BytesIO
 CACHE_DIR = '.cache'
 
 class ImageAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False, limit=None):
-        super().__init__(file_name, column_name, data, name, multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv,  name: str = __name__, multiple=False, limit=None):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, name, multiple=True)
         self.images = None
         self.cached_images_path = os.path.join(CACHE_DIR, Path(self.file_name).stem)
         self.limit = limit

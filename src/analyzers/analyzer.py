@@ -9,7 +9,7 @@ from urllib.request import HTTPError
 CACHE_DIR = '.cache'
 
 class Analyzer(ABC):
-    def __init__(self, file_name: str, column_name: str, data,  name: str = __name__, multiple=False, omit_missing=True):
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv,  name: str = __name__, multiple=False, omit_missing=True):
         self.name = name
         self.file_name = file_name
         self.column_name = column_name.strip()
@@ -19,6 +19,9 @@ class Analyzer(ABC):
         self.data = data
         self.multiple = multiple
         self.progress = 0
+        self.selected_rows = selected_rows
+        self.save_to_csv = save_to_csv
+        self.generated_data = [] 
     
     def __enter__(self):
         if not self.data:
@@ -30,23 +33,40 @@ class Analyzer(ABC):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        pass
+        if self.save_to_csv:
+            self._save_to_csv()
 
     @abstractmethod
     def decide(self, data: str, **kwargs):
         pass
+    
+    def _save_to_csv(self):
+        # TODO: output directory as argument
+        directory = f'out/{self.file_name}'
+        filename = f'{self.name}_{self.column_name}'.replace('/', '-')
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(f'out/{self.file_name}/{filename}.csv', 'w+') as csv_file:
+            csv_file.write(f'{self.name}_{self.column_name};\n')
+            csv_file.writelines([f'"{str(row)}";\n' for row in self.generated_data])
 
     def count(self):
         # import time
         for row in self.data:
             # start_time = time.time()
-
             self.progress += 1
+
+            if self.selected_rows and self.progress not in self.selected_rows:
+                continue
+
             if self.missing is not None and (not self.column_name in row or any(row[self.column_name] == x for x in [None, ''])):
                 self.missing += 1
                 continue
             
             decide = self.decide(row[self.column_name])
+
+            if self.save_to_csv:
+                self.generated_data.append(decide)
 
             # print("--- %s seconds ---" % (time.time() - start_time))
 

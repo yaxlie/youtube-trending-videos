@@ -8,15 +8,15 @@ from nltk.stem import PorterStemmer
 from collections import Counter
 
 class MissingValuesAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'Missing', omit_missing=False)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, 'Missing', omit_missing=False)
 
     def decide(self, data: str):
         return data == '' or data == None
 
 class CaseAnalyzer(Analyzer):
     def __init__(self, file_name: str, column_name: str, data, multiple=True):
-        super().__init__(file_name, column_name, data, 'Case', multiple)
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, 'Case', multiple)
 
     def decide(self, data: str):
         if data.isupper():
@@ -30,8 +30,8 @@ class CaseAnalyzer(Analyzer):
 
 
 class DigitsAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'Contain digits')
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, 'Contain digits')
 
     def decide(self, data: str):
         result = re.match(r'\d', data)
@@ -39,8 +39,8 @@ class DigitsAnalyzer(Analyzer):
 
 
 class SpecialCharsAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'With special characters')
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, 'With special characters')
 
     def decide(self, data: str):
         result = re.match(r'[^a-zA-Z.? !0-9]', data)
@@ -48,8 +48,8 @@ class SpecialCharsAnalyzer(Analyzer):
 
 
 class BooleanAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'Boolean')
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, 'Boolean')
 
     def decide(self, data: str):
         if data.lower() in ['true', 't']:
@@ -61,8 +61,8 @@ class BooleanAnalyzer(Analyzer):
 
 
 class HyperlinkAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, 'Is True')
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, 'Is True')
 
     def decide(self, data: str):
         result = re.match(r'https?:\/\/', data)
@@ -70,8 +70,8 @@ class HyperlinkAnalyzer(Analyzer):
 
 
 class DayAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Upload day', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Upload day', multiple=True)
 
     def decide(self, data: str):
         dt_format = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -82,7 +82,7 @@ class DayAnalyzer(Analyzer):
 
 class HourAnalyzer(Analyzer):
     def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Upload hour', multiple=True)
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Upload hour', multiple=True)
 
     def decide(self, data: str):
         dt_format = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -91,8 +91,8 @@ class HourAnalyzer(Analyzer):
 
 
 class CommonWordsAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Common words', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Common words', multiple=True)
 
     def decide(self, data: str):
         stemmer = PorterStemmer()
@@ -104,8 +104,8 @@ class CommonWordsAnalyzer(Analyzer):
 
 
 class PartsOfSpeechAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Common words', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Common words', multiple=True)
         if not column_name in ['title', 'tags', 'description']: # To skip and save time
             raise TypeError() # TODO: Custom exception
 
@@ -118,8 +118,8 @@ class PartsOfSpeechAnalyzer(Analyzer):
 
 
 class LongTextWordsAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Words counter', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Words counter', multiple=True)
 
     def decide(self, data: str):
         words_count = len(data.split())
@@ -128,8 +128,8 @@ class LongTextWordsAnalyzer(Analyzer):
 
 
 class LongTextLettersAnalyzer(Analyzer):
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Letters counter', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Letters counter', multiple=True)
 
     def decide(self, data: str):
         letters_count = len(data)

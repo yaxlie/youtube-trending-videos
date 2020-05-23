@@ -1,16 +1,17 @@
-import src.analyzers, src.analyzers.text_analyzers, src.analyzers.image_analyzers
+import src.analyzers, src.analyzers.text_analyzers, src.analyzers.image_analyzers, src.analyzers.dummy_analyzers
 import json
 import nltk
 from collections import Counter
 from src.analyzers.text_analyzers import *
 from src.analyzers.image_analyzers import *
+from src.analyzers.dummy_analyzers import *
 from progress.bar import Bar
 
 nltk.download('punkt')
 nltk.download('maxent_treebank_pos_tagger')
 nltk.download('averaged_perceptron_tagger')
 
-def execute(csv_files, columns, analyzers, output='result'):
+def execute(csv_files, columns, analyzers, output='result', selected_rows=None, save_to_csv=False):
 	data = None
 	result = {}
 	bar = Bar('Processing', max=len(csv_files) * len(analyzers) * len(columns))
@@ -22,7 +23,7 @@ def execute(csv_files, columns, analyzers, output='result'):
 			for column in columns:
 				bar.next()
 				try:
-					with Analyzer(csv_file, column, data) as analyzer:
+					with Analyzer(csv_file, column, data, selected_rows, save_to_csv) as analyzer:
 						if type(analyzer.found) == int:
 							result[csv_file][analyzername][column] = analyzer.found
 						else:

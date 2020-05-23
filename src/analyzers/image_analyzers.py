@@ -12,8 +12,8 @@ class ColorsAnalyzer(ImageAnalyzer):
     '''
     Find main colors of the image
     '''
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Main colors', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Main colors', multiple=True)
 
     def decide(self, image:Image):
         image = image.crop((20, 20, 100, 60))
@@ -32,8 +32,8 @@ class TextAnalyzer(ImageAnalyzer):
     refs https://github.com/tesseract-ocr/tesseract/wiki
     '''
     
-    def __init__(self, file_name: str, column_name: str, data):
-        super().__init__(file_name, column_name, data, f'Has text', multiple=True)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Has text', multiple=True)
 
     def decide(self, image:Image):
         import pytesseract
@@ -47,8 +47,8 @@ class ObjectsNamesAnalyzer(ImageAnalyzer):
     Find objects in the image
     '''
 
-    def __init__(self, file_name: str, column_name: str, data, limit=1000): #TODO: no limit
-        super().__init__(file_name, column_name, data, f'Objects', multiple=True, limit=limit)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv): #TODO: no limit
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Objects', multiple=True)
         self.detector = init_detector("./data/yolo.h5")
 
     def decide(self, image:Image):
@@ -76,8 +76,8 @@ class ObjectsNumberAnalyzer(ImageAnalyzer):
     Return number of different objects on image
     '''
 
-    def __init__(self, file_name: str, column_name: str, data, limit=1000): #TODO: no limit
-        super().__init__(file_name, column_name, data, f'Number of objects', multiple=True, limit=limit)
+    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Number of objects', multiple=True)
         self.detector = init_detector("./data/yolo.h5")
 
     def decide(self, image:Image):
