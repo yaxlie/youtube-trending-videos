@@ -1,3 +1,5 @@
+.manager
+yt_client_secret.json
 data
 .venv
 **/*.json
