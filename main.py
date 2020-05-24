@@ -24,8 +24,11 @@ if __name__ == "__main__":
 	# analyze.execute(csv_files, img_columns, img_analyzers, 'images')
 
 	# generate data for step3
+	# rows = random.sample(range(1, 35000), 1000)
+	# analyze.execute(csv_files, txt_columns, txt_analyzers, 'text', rows, True)
+	# analyze.execute(csv_files, img_columns, img_analyzers, 'images', rows, True)
+	# analyze.execute(csv_files, dummy_columns, dummy_analyzers, 'dummy', rows, True)
 
-	rows = random.sample(range(1, 35000), 1000)
-	analyze.execute(csv_files, txt_columns, txt_analyzers, 'text', rows, True)
-	analyze.execute(csv_files, img_columns, img_analyzers, 'images', rows, True)
-	analyze.execute(csv_files, dummy_columns, dummy_analyzers, 'dummy', rows, True)
+	# step5
+	csv_files = ['data/GB_videos_5p.csv', 'out/data/GB_videos_5p.csv']
+	analyze.execute(csv_files, txt_columns, ['MissingValuesAnalyzer', 'BooleanAnalyzer', 'CommonWordsAnalyzer'], 'missing_values_after_fill')

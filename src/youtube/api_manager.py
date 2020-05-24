@@ -61,28 +61,48 @@ class ApiManager():
         
         self.save = True
 
+    def search_videos(self, publishedBefore, publishedAfter, regionCode, limit=10):
+        videos = []
+
+        request = self.youtube.search().list(
+            part="snippet",
+            order="viewCount",
+            type="video",
+            maxResults=limit,
+            publishedAfter=publishedAfter, # "2017-01-01T00:00:00Z",
+            publishedBefore=publishedBefore, # "2018-06-01T00:00:00Z",
+            regionCode=regionCode # "GB"
+        )
+        response = request.execute()
+
+        for video in response['items']:
+            _id = video['id']['videoId']
+            videos.append(Video(video_id=_id))
+
+        return videos
+
     def get_videos(self, video_ids=None):
         videos = {}
-        try:
-            if video_ids:
-                chunks = [video_ids[x:x+50] for x in range(0, len(video_ids), 50)]
-                for _ids in chunks:
-                    ids = ','.join(_ids)
-                    request = self.youtube.videos().list(
-                        part="contentDetails,statistics,snippet",
-                        id=ids
-                    )
-                    response = request.execute()
+        if video_ids:
+            chunks = [video_ids[x:x+50] for x in range(0, len(video_ids), 50)]
+            for _ids in chunks:
+                ids = ','.join(_ids)
+                request = self.youtube.videos().list(
+                    part="contentDetails,statistics,snippet",
+                    id=ids
+                )
+                response = request.execute()
 
-                    for response in response['items']:
+                for response in response['items']:
+                    try:
                         video_id = response['id'] 
                         trending_date = None
-                        title = response['snippet']['title']
-                        channel_title = response['snippet']['channelTitle']
-                        category_id = response['snippet']['categoryId']
-                        publish_time = response['snippet']['publishedAt']
-                        tags = response['snippet']['tags']
-                        views = response['statistics']['viewCount']
+                        title = response['snippet'].get('title', None)
+                        channel_title = response['snippet'].get('channelTitle', None)
+                        category_id = response['snippet'].get('categoryId', None)
+                        publish_time = response['snippet'].get('publishedAt', None)
+                        tags = response['snippet'].get('tags', [])
+                        views = response['statistics'].get('viewCount', None)
                         thumbnail_link = response['snippet']['thumbnails']['high']['url'] # get highest resolution 480x360
 
                         if 'commentCount' in response['statistics']:
@@ -101,7 +121,7 @@ class ApiManager():
                             dislikes = None
                             ratings_disabled = 'True'
 
-                        video_error_or_removed = None
+                        video_error_or_removed = 'False'
                         description = response['snippet']['description']
 
                         video = Video(
@@ -122,7 +142,6 @@ class ApiManager():
                             video_error_or_removed, 
                             description)
                         videos[video_id] = video
-        except Exception as e:
-            print(e)
-
+                    except Exception as e:
+                        print(e)
         return videos
