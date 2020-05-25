@@ -71,13 +71,12 @@ def get_not_trendings(csv_file, region='GB', limit=10, limit_trendings=None):
         return not_trendings
 
 for csv_file in csv_files:
-    videos = get_not_trendings(csv_file, limit_trendings=10)
+    not_trending_videos = get_not_trendings(csv_file, limit_trendings=10)
     filename = csv_file.replace('.csv', '')
     with open(os.path.join('out', f'{filename}-not-trending.csv'), 'w', errors='ignore') as csv_out:
-        for video in videos:
+        for v in not_trending_videos.values():
             try:
-                video = videos[row.split(';')[0]]
-                row_to_write = str(video) + '\n'
+                row_to_write = str(v) + '\n'
                 csv_out.write(row_to_write)
             except Exception as e:
                 print(e)
