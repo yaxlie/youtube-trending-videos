@@ -11,6 +11,9 @@ nltk.download('punkt')
 nltk.download('maxent_treebank_pos_tagger')
 nltk.download('averaged_perceptron_tagger')
 
+# MOST_COMMON_COUNT = 15 #TODO
+MOST_COMMON_COUNT = None
+
 def execute(csv_files, columns, analyzers, output='result', selected_rows=None, save_to_csv=False):
 	data = None
 	result = {}
@@ -26,8 +29,10 @@ def execute(csv_files, columns, analyzers, output='result', selected_rows=None, 
 					with Analyzer(csv_file, column, data, selected_rows, save_to_csv) as analyzer:
 						if type(analyzer.found) == int:
 							result[csv_file][analyzername][column] = analyzer.found
+						elif MOST_COMMON_COUNT:
+							result[csv_file][analyzername][column] = dict(Counter(analyzer.found).most_common(MOST_COMMON_COUNT))
 						else:
-							result[csv_file][analyzername][column] = dict(Counter(analyzer.found).most_common(15))
+							result[csv_file][analyzername][column] = dict(Counter(analyzer.found))
 				except (ValueError, TypeError):
 					# It just means, that the specific column is not for this specific analyzer - ignore.
 					pass

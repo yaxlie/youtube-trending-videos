@@ -9,10 +9,13 @@ from plotly.graph_objs import *
 from io import StringIO
 
 class PlotUtil():
-    def __init__(self, files, json_file):
+    def __init__(self, files, json_file, data=None):
         self.files = files
-        self.json_file = open(json_file)
-        self.data = json.load(self.json_file)
+        if json_file:
+            self.json_file = open(json_file)
+        else:
+            self.json_file = None
+        self.data = json.load(self.json_file) if not data else data
 
     def __json2csv(self, data, file, analyzer):
         csv=''
@@ -33,7 +36,8 @@ class PlotUtil():
             return csv
 
     def close(self):
-        self.json_file.close()
+        if self.json_file:
+            self.json_file.close()
 
     def plot_table(self, analyzer):
         try:

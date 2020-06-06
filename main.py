@@ -20,15 +20,20 @@ if __name__ == "__main__":
 	dummy_columns=['views', 'likes', 'dislikes', 'comment_count']
 	dummy_analyzers = [m[0] for m in inspect.getmembers(src.analyzers.dummy_analyzers, inspect.isclass) if m[1].__module__ == 'src.analyzers.dummy_analyzers']
 
-	# analyze.execute(csv_files, txt_columns, txt_analyzers, 'text')
+	analyze.execute(csv_files, ['category_id'], txt_analyzers, 'categories_missing')
 	# analyze.execute(csv_files, img_columns, img_analyzers, 'images')
 
 	# generate data for step3
-	# rows = random.sample(range(1, 35000), 1000)
+	# rows = random.sample(range(1, 35000), 10)
 	# analyze.execute(csv_files, txt_columns, txt_analyzers, 'text', rows, True)
 	# analyze.execute(csv_files, img_columns, img_analyzers, 'images', rows, True)
 	# analyze.execute(csv_files, dummy_columns, dummy_analyzers, 'dummy', rows, True)
 
 	# step5
-	csv_files = ['data/GB_videos_5p.csv', 'out/data/GB_videos_5p.csv']
-	analyze.execute(csv_files, txt_columns, ['MissingValuesAnalyzer', 'BooleanAnalyzer', 'CommonWordsAnalyzer'], 'missing_values_after_fill')
+	# csv_files = ['data/GB_videos_5p.csv', 'out/data/GB_videos_5p.csv']
+	# analyze.execute(csv_files, txt_columns, ['MissingValuesAnalyzer', 'BooleanAnalyzer', 'CommonWordsAnalyzer'], 'missing_values_after_fill')
+
+	# step4
+	# analyze.execute(csv_files, txt_columns, txt_analyzers, 'text', save_to_csv=True)
+	# analyze.execute(csv_files, img_columns, img_analyzers, 'images', save_to_csv=True)
+	# analyze.execute(csv_files, dummy_columns, dummy_analyzers, 'dummy', save_to_csv=True)

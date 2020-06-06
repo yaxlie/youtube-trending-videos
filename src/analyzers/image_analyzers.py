@@ -8,38 +8,39 @@ from io import BytesIO
 from imageai.Detection import ObjectDetection
 from imageai.Prediction import ImagePrediction
 
-class ColorsAnalyzer(ImageAnalyzer):
-    '''
-    Find main colors of the image
-    '''
-    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
-        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Main colors', multiple=True)
 
-    def decide(self, image:Image):
-        image = image.crop((20, 20, 100, 60))
-        image = image.resize((20, 20))
-        colors = image.getcolors(400) # width * height
-        color_names = [src.tools.colors.get_colour_name(color[1]) for color in colors] # TODO: optimize
-        colors_count = Counter(color_names)
+# class ColorsAnalyzer(ImageAnalyzer):
+#     '''
+#     Find main colors of the image
+#     '''
+#     def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+#         super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Main colors', multiple=True)
+
+#     def decide(self, image:Image):
+#         image = image.crop((20, 20, 100, 60))
+#         image = image.resize((20, 20))
+#         colors = image.getcolors(400) # width * height
+#         color_names = [src.tools.colors.get_colour_name(color[1]) for color in colors] # TODO: optimize
+#         colors_count = Counter(color_names)
         
-        return '-'.join(sorted([color[0] for color in colors_count.most_common(5)]))
+#         return '-'.join(sorted([color[0] for color in colors_count.most_common(5)]))
 
 
-class TextAnalyzer(ImageAnalyzer):
-    '''
-    Check if image contain text.
-    WARNING: Tesseract-ocr installation is needed! 
-    refs https://github.com/tesseract-ocr/tesseract/wiki
-    '''
+# class TextAnalyzer(ImageAnalyzer):
+#     '''
+#     Check if image contain text.
+#     WARNING: Tesseract-ocr installation is needed! 
+#     refs https://github.com/tesseract-ocr/tesseract/wiki
+#     '''
     
-    def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
-        super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Has text', multiple=True)
+#     def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv):
+#         super().__init__(file_name, column_name, data, selected_rows, save_to_csv, f'Has text', multiple=True)
 
-    def decide(self, image:Image):
-        import pytesseract
-        text = pytesseract.image_to_string(image)
-        text = re.sub(r"[^A-Za-z]+", '', text)
-        return text
+#     def decide(self, image:Image):
+#         import pytesseract
+#         text = pytesseract.image_to_string(image)
+#         text = re.sub(r"[^A-Za-z]+", '', text)
+#         return text
 
 
 class ObjectsNamesAnalyzer(ImageAnalyzer):
@@ -64,7 +65,7 @@ class ObjectsNamesAnalyzer(ImageAnalyzer):
             return None
 
         if not detected_objects:
-            return 'Unknown'
+            return []
         else:
             objects = [obj['name'] for obj in detected_objects] 
             objects = list(dict.fromkeys(objects))

@@ -7,6 +7,8 @@ import urllib.request
 from urllib.request import HTTPError
 
 CACHE_DIR = '.cache'
+# MOST_COMMON_COUNT = 15 #TODO
+MOST_COMMON_COUNT = None
 
 class Analyzer(ABC):
     def __init__(self, file_name: str, column_name: str, data, selected_rows, save_to_csv,  name: str = __name__, multiple=False, omit_missing=True):
@@ -42,11 +44,12 @@ class Analyzer(ABC):
     
     def _save_to_csv(self):
         # TODO: output directory as argument
-        directory = f'out/{self.file_name}'
+        name = self.file_name.split('.')[0]
+        directory = f'out/{name}'
         filename = f'{self.name}_{self.column_name}'.replace('/', '-')
         if not os.path.exists(directory):
             os.makedirs(directory)
-        with open(f'out/{self.file_name}/{filename}.csv', 'w+') as csv_file:
+        with open(f'{directory}/{filename}.csv', 'w+') as csv_file:
             csv_file.write(f'{self.name}_{self.column_name};\n')
             csv_file.writelines([f'"{str(row)}";\n' for row in self.generated_data])
 
@@ -60,6 +63,8 @@ class Analyzer(ABC):
                 continue
 
             if self.missing is not None and (not self.column_name in row or any(row[self.column_name] == x for x in [None, ''])):
+                if self.save_to_csv:
+                    self.generated_data.append('-1')
                 self.missing += 1
                 continue
             
@@ -95,7 +100,10 @@ class Analyzer(ABC):
         import json
         # return f'"{{found": {self.found}; "total": {self.total}; "missing": {self.missing}}}'
         if type(self.found) == dict:
-            j = json.dumps(dict(Counter(self.found).most_common(15)))
+            if MOST_COMMON_COUNT:
+                j = json.dumps(dict(Counter(self.found).most_common(MOST_COMMON_COUNT)))
+            else:
+                j = json.dumps(dict(Counter(self.found)))
             return f'{{"found": [{j}]}}'
         else:
             return f'{{"found": {self.found}}}' 
